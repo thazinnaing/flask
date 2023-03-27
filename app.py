@@ -19,12 +19,23 @@ class users(db.Model):
     def __init__(self, name, email):
         self.name = name
         self.email = email
-        
+    
+@app.before_first_request
+def create_tables():
+    db.create_all()
     
 
 @app.route("/")
 def home():
     return render_template("index.html")
+
+@app.route("/delete")
+def delete():
+    user = 'martin'
+    users.query.filter_by(name = user).delete()
+    db.session.commit()
+    
+        
 
 @app.route('/view')
 def view():
@@ -42,6 +53,7 @@ def login():
         else:
             usr = users(user, "")
             db.session.add(usr)
+            db.session.commit()
             
         flash("Continue.....!")
         return redirect(url_for("user"))
@@ -88,6 +100,7 @@ def logout():
 
 
 if __name__ == "__main__":
-    db.create_all
+    # db.init_app(app)
+    # db.create_all
     app.run(debug = True)
         
